@@ -1,62 +1,89 @@
 <?php
 
-declare(strict_types=1); // Habilita el modo estricto de tipos
+declare(strict_types=1);
 
+/**
+ * Clase que representa un Pokémon.
+ * Esta clase se encarga de almacenar los datos de un Pokémon y de obtener la información desde la API.
+ */
 class Pokemon
 {
-    // Declaración de los atributos privados de la clase Pokemon
+    /**
+     * Constructor de la clase.
+     * Recibe los atributos básicos del Pokémon y los asigna a las propiedades de la instancia.
+     *
+     * @param string $nombre Nombre del Pokémon.
+     * @param int $identificador Identificador único del Pokémon.
+     * @param string $url_imagen URL de la imagen del Pokémon.
+     * @param int $peso Peso del Pokémon.
+     * @param int $altura Altura del Pokémon.
+     * @param int $experiencia_base Experiencia base que otorga el Pokémon.
+     * @param string $nombre_especie Nombre de la especie a la que pertenece el Pokémon.
+     * @param string $color Color predominante del Pokémon.
+     */
     public function __construct(
-        private string $name, // Nombre del Pokémon
-        private int $id, // ID del Pokémon
-        private string $image_url, // URL de la imagen del Pokémon
-        private int $weight, // Peso del Pokémon
-        private int $height, // Altura del Pokémon
-        private int $base_experience, // Experiencia base del Pokémon
-        private string $species_name, // Nombre de la especie del Pokémon
-        private string $color // Color del Pokémon
+        private string $nombre,
+        private int $identificador,
+        private string $url_imagen,
+        private int $peso,
+        private int $altura,
+        private int $experiencia_base,
+        private string $nombre_especie,
+        private string $color
     ) {
     }
 
-    // Función estática para obtener y crear una instancia de Pokemon desde la API
-    public static function fetch_and_create_pokemon(string $api_url, int $pokemon_id): Pokemon
+    /**
+     * Método estático que obtiene los datos de la API y crea una instancia de Pokémon.
+     *
+     * @param string $ruta_api URL base de la API.
+     * @param int $id_pokemon Identificador del Pokémon a obtener.
+     * @return Pokemon Instancia de la clase Pokemon con los datos cargados.
+     */
+    public static function obtener_y_crear_pokemon(string $ruta_api, int $id_pokemon): Pokemon
     {
-        // Construcción de la URL para la petición a la API
-        $url = $api_url . $pokemon_id;
-        // Obtención de los datos de la API
-        $result = file_get_contents($url);
-        // Decodificación de los datos JSON en un array asociativo
-        $data = json_decode($result, true);
+        // Construir la URL completa de la API concatenando la ruta base y el identificador del Pokémon
+        $url = $ruta_api . $id_pokemon;
+        // Obtener el contenido JSON desde la API
+        $resultado = file_get_contents($url);
+        // Decodificar el JSON a un array asociativo
+        $datos = json_decode($resultado, true);
 
-        // Obtención de la experiencia base
-        $baseExperience = $data['base_experience'];
+        // Extraer la experiencia base del Pokémon
+        $experienciaBase = $datos['base_experience'];
 
-        // Obtención del nombre de la especie
-        $speciesUrl = $data['species']['url'];
-        $speciesResult = file_get_contents($speciesUrl);
-        $speciesData = json_decode($speciesResult, true);
-        $speciesName = $speciesData['name'];
+        // Obtener los datos de la especie del Pokémon desde la URL proporcionada
+        $urlEspecie = $datos['species']['url'];
+        $resultadoEspecie = file_get_contents($urlEspecie);
+        $datosEspecie = json_decode($resultadoEspecie, true);
+        $nombreEspecie = $datosEspecie['name'];
 
-        // Obtención del color del pokemon
-        $colorUrl = $speciesData['color']['url'];
-        $colorResult = file_get_contents($colorUrl);
-        $colorData = json_decode($colorResult, true);
-        $color = $colorData['name'];
+        // Obtener el color del Pokémon desde la URL incluida en los datos de la especie
+        $urlColor = $datosEspecie['color']['url'];
+        $resultadoColor = file_get_contents($urlColor);
+        $datosColor = json_decode($resultadoColor, true);
+        $color = $datosColor['name'];
 
-        // Creación y retorno de una nueva instancia de Pokemon con los datos obtenidos
+        // Crear y retornar una nueva instancia de Pokemon con todos los datos obtenidos
         return new self(
-            $data['name'],
-            $data['id'],
-            $data['sprites']['front_default'],
-            $data['weight'],
-            $data['height'],
-            $baseExperience,
-            $speciesName,
+            $datos['name'],
+            $datos['id'],
+            $datos['sprites']['front_default'],
+            $datos['weight'],
+            $datos['height'],
+            $experienciaBase,
+            $nombreEspecie,
             $color
         );
     }
 
-    // Función para obtener los datos del objeto como un array asociativo
-    public function get_data(): array
+    /**
+     * Método para obtener los datos del objeto en forma de array asociativo.
+     * Esto permite, por ejemplo, pasar los datos a una plantilla para mostrarlos.
+     *
+     * @return array Array con los nombres de las propiedades y sus valores.
+     */
+    public function obtener_datos(): array
     {
         return get_object_vars($this);
     }

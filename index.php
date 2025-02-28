@@ -1,25 +1,28 @@
 <?php
-
+// Incluir los archivos de constantes, funciones y la definición de la clase Pokémon
 require_once 'consts.php';
 require_once 'functions.php';
 require_once 'classes/Pokemon.php';
 
-// Obtener datos del primer Pokémon (Pikachu)
-$pokemon1 = Pokemon::fetch_and_create_pokemon(API_URL, 25);
+// Obtener los datos del primer Pokémon (Pikachu) usando la función estática de la clase
+$pokemon1 = Pokemon::obtener_y_crear_pokemon(RUTA_API, 25);
 
-// Obtener datos del segundo Pokémon (Charizard)
-$pokemon2 = Pokemon::fetch_and_create_pokemon(API_URL, 6);
+// Obtener los datos del segundo Pokémon (Charizard) de la misma manera
+$pokemon2 = Pokemon::obtener_y_crear_pokemon(RUTA_API, 6);
 ?>
 
-<?php render_template('head', ["title" => "Información de Pokémon"]); ?>
+<!-- Renderizar la plantilla del encabezado, pasando el título de la página -->
+<?php renderizar_plantilla('head', ["titulo" => "Información de Pokémon"]); ?>
 
 <div class="container">
     <div class="row">
+        <!-- Renderizar la plantilla principal para mostrar los datos del primer Pokémon (Pikachu) -->
         <div class="col-md-6">
-            <?php render_template('main', $pokemon1->get_data()); ?>
+            <?php renderizar_plantilla('main', $pokemon1->obtener_datos()); ?>
         </div>
+        <!-- Renderizar la plantilla principal para mostrar los datos del segundo Pokémon (Charizard) -->
         <div class="col-md-6">
-            <?php render_template('main', $pokemon2->get_data()); ?>
+            <?php renderizar_plantilla('main', $pokemon2->obtener_datos()); ?>
         </div>
     </div>
-</div>e
+</div>
